@@ -122,7 +122,7 @@
                     </label>
                     <div class="border-2 border-dashed border-orange-300 rounded-lg p-6 text-center hover:border-orange-500 transition-colors">
                         <input type="file" id="exerciseImage" accept="image/*" class="hidden">
-                        <button type="button" onclick="document.getElementById('exerciseImage').click()" class="w-full">
+                        <button type="button" id="exerciseUploadBtn" onclick="document.getElementById('exerciseImage').click()" class="w-full">
                             <i class="fas fa-cloud-upload-alt text-4xl text-orange-400 mb-2"></i>
                             <p class="text-orange-600 font-medium">คลิกเพื่อเลือกรูปภาพ</p>
                             <p class="text-gray-500 text-sm mt-1">รองรับไฟล์ JPG, PNG, GIF (ไม่จำกัดขนาด)</p>
@@ -144,7 +144,7 @@
                     </label>
                     <div class="border-2 border-dashed border-orange-300 rounded-lg p-6 text-center hover:border-orange-500 transition-colors">
                         <input type="file" id="healthImage" accept="image/*" class="hidden">
-                        <button type="button" onclick="document.getElementById('healthImage').click()" class="w-full">
+                        <button type="button" id="healthUploadBtn" onclick="document.getElementById('healthImage').click()" class="w-full">
                             <i class="fas fa-cloud-upload-alt text-4xl text-orange-400 mb-2"></i>
                             <p class="text-orange-600 font-medium">คลิกเพื่อเลือกรูปภาพ</p>
                             <p class="text-gray-500 text-sm mt-1">รองรับไฟล์ JPG, PNG, GIF (ไม่จำกัดขนาด)</p>
@@ -402,7 +402,7 @@
         }
 
         // File preview functionality
-        function setupFilePreview(inputId, previewId, imgId, fileNameId) {
+        function setupFilePreview(inputId, previewId, imgId, fileNameId, uploadBtnId) {
             document.getElementById(inputId).addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
@@ -411,14 +411,15 @@
                         document.getElementById(imgId).src = e.target.result;
                         document.getElementById(fileNameId).textContent = file.name;
                         document.getElementById(previewId).classList.remove('hidden');
+                        document.getElementById(uploadBtnId).classList.add('hidden');
                     };
                     reader.readAsDataURL(file);
                 }
             });
         }
 
-        setupFilePreview('exerciseImage', 'exercisePreview', 'exerciseImg', 'exerciseFileName');
-        setupFilePreview('healthImage', 'healthPreview', 'healthImg', 'healthFileName');
+        setupFilePreview('exerciseImage', 'exercisePreview', 'exerciseImg', 'exerciseFileName', 'exerciseUploadBtn');
+        setupFilePreview('healthImage', 'healthPreview', 'healthImg', 'healthFileName', 'healthUploadBtn');
 
         // Delete image functionality
         document.getElementById('deleteExerciseBtn').addEventListener('click', function() {
@@ -426,6 +427,7 @@
             document.getElementById('exercisePreview').classList.add('hidden');
             document.getElementById('exerciseImg').src = '';
             document.getElementById('exerciseFileName').textContent = '';
+            document.getElementById('exerciseUploadBtn').classList.remove('hidden');
         });
 
         document.getElementById('deleteHealthBtn').addEventListener('click', function() {
@@ -433,6 +435,7 @@
             document.getElementById('healthPreview').classList.add('hidden');
             document.getElementById('healthImg').src = '';
             document.getElementById('healthFileName').textContent = '';
+            document.getElementById('healthUploadBtn').classList.remove('hidden');
         });
 
         // Convert file to base64
@@ -508,6 +511,8 @@
                         document.getElementById('recordForm').reset();
                         document.getElementById('exercisePreview').classList.add('hidden');
                         document.getElementById('healthPreview').classList.add('hidden');
+                        document.getElementById('exerciseUploadBtn').classList.remove('hidden');
+                        document.getElementById('healthUploadBtn').classList.remove('hidden');
                         document.getElementById('successState').classList.add('hidden');
                         document.getElementById('submitBtn').classList.remove('hidden');
                         document.getElementById('dateSelect').valueAsDate = new Date();
@@ -772,5 +777,5 @@
             });
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a7335580a75805',t:'MTc1NDQwNjQwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a73a11f49ace9b',t:'MTc1NDQwNjY4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
