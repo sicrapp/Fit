@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fit & FIRM REHAB TEAM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+        .tab-active {
+            background: linear-gradient(135deg, #fb923c, #f97316);
+            color: white;
+        }
+        .tab-inactive {
+            background: white;
+            color: #fb923c;
+            border: 2px solid #fb923c;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #fed7aa, #fdba74);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(251, 146, 60, 0.1);
+        }
+        .loading-spinner {
+            border: 3px solid #fed7aa;
+            border-top: 3px solid #f97316;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success-animation {
+            animation: bounce 0.6s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-lg">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="text-center">
+                <h1 class="text-2xl md:text-3xl font-bold text-orange-600 mb-2">
+                    <i class="fas fa-heartbeat mr-2"></i>
+                    Fit & FIRM REHAB TEAM
+                </h1>
+                <p class="text-gray-600 text-sm md:text-base">ระบบบันทึกข้อมูลกิจกรรมและคะแนนสุขภาพ</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="max-w-4xl mx-auto px-4 py-6">
+        <div class="flex rounded-lg overflow-hidden card-shadow mb-6">
+            <button id="recordTab" class="flex-1 py-3 px-4 font-medium transition-all duration-300 tab-active">
+                <i class="fas fa-edit mr-2"></i>
+                <span class="hidden sm:inline">บันทึกข้อมูล</span>
+                <span class="sm:hidden">บันทึก</span>
+            </button>
+            <button id="summaryTab" class="flex-1 py-3 px-4 font-medium transition-all duration-300 tab-inactive">
+                <i class="fas fa-chart-bar mr-2"></i>
+                <span class="hidden sm:inline">สรุปข้อมูล</span>
+                <span class="sm:hidden">สรุป</span>
+            </button>
+            <button id="rankingTab" class="flex-1 py-3 px-4 font-medium transition-all duration-300 tab-inactive">
+                <i class="fas fa-trophy mr-2"></i>
+                <span class="hidden sm:inline">อันดับคะแนน</span>
+                <span class="sm:hidden">อันดับ</span>
+            </button>
+        </div>
+
+        <!-- Record Tab Content -->
+        <div id="recordContent" class="bg-white rounded-lg card-shadow p-6">
+            <form id="recordForm" class="space-y-6">
+                <!-- Name Selection -->
+                <div>
+                    <label class="block text-orange-600 font-medium mb-2">
+                        <i class="fas fa-user mr-2"></i>เลือกชื่อ
+                    </label>
+                    <select id="nameSelect" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500 focus:outline-none transition-colors">
+                        <option value="">-- เลือกชื่อ --</option>
+                        <option value="วารีรัตน์">วารีรัตน์</option>
+                        <option value="เตือนใจ">เตือนใจ</option>
+                        <option value="สุพัตรา">สุพัตรา</option>
+                        <option value="ฐิติมา">ฐิติมา</option>
+                        <option value="อุมาพร">อุมาพร</option>
+                        <option value="เอกธนัช">เอกธนัช</option>
+                        <option value="จิรพงศ์">จิรพงศ์</option>
+                        <option value="นิสา">นิสา</option>
+                        <option value="อัจฉรา">อัจฉรา</option>
+                        <option value="ไพโรจน์">ไพโรจน์</option>
+                        <option value="อรรถพล">อรรถพล</option>
+                        <option value="มณฑา">มณฑา</option>
+                    </select>
+                </div>
+
+                <!-- Date Selection -->
+                <div>
+                    <label class="block text-orange-600 font-medium mb-2">
+                        <i class="fas fa-calendar mr-2"></i>เลือกวันที่
+                    </label>
+                    <input type="date" id="dateSelect" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500 focus:outline-none transition-colors">
+                </div>
+
+                <!-- Exercise Activity Image -->
+                <div>
+                    <label class="block text-orange-600 font-medium mb-2">
+                        <i class="fas fa-dumbbell mr-2"></i>รูปภาพกิจกรรมออกกำลังกาย
+                    </label>
+                    <div class="border-2 border-dashed border-orange-300 rounded-lg p-6 text-center hover:border-orange-500 transition-colors">
+                        <input type="file" id="exerciseImage" accept="image/*" class="hidden">
+                        <button type="button" onclick="document.getElementById('exerciseImage').click()" class="w-full">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-orange-400 mb-2"></i>
+                            <p class="text-orange-600 font-medium">คลิกเพื่อเลือกรูปภาพ</p>
+                            <p class="text-gray-500 text-sm mt-1">รองรับไฟล์ JPG, PNG, GIF</p>
+                        </button>
+                        <div id="exercisePreview" class="mt-4 hidden">
+                            <img id="exerciseImg" class="max-w-full h-32 object-cover rounded-lg mx-auto">
+                            <p id="exerciseFileName" class="text-sm text-gray-600 mt-2"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Credit Image -->
+                <div>
+                    <label class="block text-orange-600 font-medium mb-2">
+                        <i class="fas fa-award mr-2"></i>รูปภาพคะแนน Siriraj Health Credit
+                    </label>
+                    <div class="border-2 border-dashed border-orange-300 rounded-lg p-6 text-center hover:border-orange-500 transition-colors">
+                        <input type="file" id="healthImage" accept="image/*" class="hidden">
+                        <button type="button" onclick="document.getElementById('healthImage').click()" class="w-full">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-orange-400 mb-2"></i>
+                            <p class="text-orange-600 font-medium">คลิกเพื่อเลือกรูปภาพ</p>
+                            <p class="text-gray-500 text-sm mt-1">รองรับไฟล์ JPG, PNG, GIF</p>
+                        </button>
+                        <div id="healthPreview" class="mt-4 hidden">
+                            <img id="healthImg" class="max-w-full h-32 object-cover rounded-lg mx-auto">
+                            <p id="healthFileName" class="text-sm text-gray-600 mt-2"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-lg font-medium text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-save mr-2"></i>บันทึกข้อมูล
+                </button>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden text-center py-4">
+                    <div class="loading-spinner mx-auto mb-2"></div>
+                    <p class="text-orange-600 font-medium">กำลังบันทึกข้อมูล...</p>
+                </div>
+
+                <!-- Success State -->
+                <div id="successState" class="hidden text-center py-4 success-animation">
+                    <i class="fas fa-check-circle text-5xl text-green-500 mb-2"></i>
+                    <p class="text-green-600 font-medium text-lg">บันทึกข้อมูลสำเร็จ!</p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Summary Tab Content -->
+        <div id="summaryContent" class="hidden bg-white rounded-lg card-shadow p-6">
+            <div class="space-y-6">
+                <!-- Filter Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-orange-600 font-medium mb-2">
+                            <i class="fas fa-user mr-2"></i>เลือกชื่อ
+                        </label>
+                        <select id="summaryName" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500 focus:outline-none">
+                            <option value="">ทั้งหมด</option>
+                            <option value="วารีรัตน์">วารีรัตน์</option>
+                            <option value="เตือนใจ">เตือนใจ</option>
+                            <option value="สุพัตรา">สุพัตรา</option>
+                            <option value="ฐิติมา">ฐิติมา</option>
+                            <option value="อุมาพร">อุมาพร</option>
+                            <option value="เอกธนัช">เอกธนัช</option>
+                            <option value="จิรพงศ์">จิรพงศ์</option>
+                            <option value="นิสา">นิสา</option>
+                            <option value="อัจฉรา">อัจฉรา</option>
+                            <option value="ไพโรจน์">ไพโรจน์</option>
+                            <option value="อรรถพล">อรรถพล</option>
+                            <option value="มณฑา">มณฑา</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-orange-600 font-medium mb-2">
+                            <i class="fas fa-calendar mr-2"></i>จากเดือน
+                        </label>
+                        <input type="month" id="fromMonth" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-orange-600 font-medium mb-2">
+                            <i class="fas fa-calendar mr-2"></i>ถึงเดือน
+                        </label>
+                        <input type="month" id="toMonth" class="w-full p-3 border-2 border-orange-200 rounded-lg focus:border-orange-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <button id="searchBtn" class="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-8 rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all duration-300">
+                    <i class="fas fa-search mr-2"></i>ค้นหาข้อมูล
+                </button>
+
+                <!-- Summary Cards -->
+                <div id="summaryCards" class="grid grid-cols-1 md:grid-cols-3 gap-6 hidden">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border-l-4 border-blue-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-dumbbell text-3xl text-blue-500 mr-4"></i>
+                            <div>
+                                <p class="text-blue-600 font-medium">กิจกรรมออกกำลังกาย</p>
+                                <p id="exerciseCount" class="text-2xl font-bold text-blue-700">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border-l-4 border-green-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-award text-3xl text-green-500 mr-4"></i>
+                            <div>
+                                <p class="text-green-600 font-medium">คะแนน Health Credit</p>
+                                <p id="healthCount" class="text-2xl font-bold text-green-700">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-lg border-l-4 border-orange-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-chart-line text-3xl text-orange-500 mr-4"></i>
+                            <div>
+                                <p class="text-orange-600 font-medium">รวมทั้งหมด</p>
+                                <p id="totalCount" class="text-2xl font-bold text-orange-700">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div id="dataTable" class="hidden overflow-x-auto">
+                    <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-lg">
+                        <thead class="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+                            <tr>
+                                <th class="p-3 text-left">ชื่อ</th>
+                                <th class="p-3 text-left">วันที่</th>
+                                <th class="p-3 text-center">กิจกรรม</th>
+                                <th class="p-3 text-center">คะแนน</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Loading State for Summary -->
+                <div id="summaryLoading" class="hidden text-center py-8">
+                    <div class="loading-spinner mx-auto mb-2"></div>
+                    <p class="text-orange-600 font-medium">กำลังโหลดข้อมูล...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ranking Tab Content -->
+        <div id="rankingContent" class="hidden bg-white rounded-lg card-shadow p-6">
+            <div class="space-y-6">
+                <!-- Show Ranking Button -->
+                <div class="text-center">
+                    <button id="showRankingBtn" class="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-8 rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-trophy mr-2"></i>แสดงอันดับคะแนน
+                    </button>
+                </div>
+
+                <!-- Loading State for Ranking -->
+                <div id="rankingLoading" class="hidden text-center py-8">
+                    <div class="loading-spinner mx-auto mb-2"></div>
+                    <p class="text-orange-600 font-medium">กำลังคำนวณอันดับ...</p>
+                </div>
+
+                <!-- Ranking Results -->
+                <div id="rankingResults" class="hidden space-y-6">
+                    <!-- Total Score Ranking -->
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-lg border-l-4 border-yellow-500">
+                        <h3 class="text-xl font-bold text-yellow-700 mb-4 flex items-center">
+                            <i class="fas fa-crown mr-2"></i>อันดับคะแนนรวมทั้งหมด
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-yellow-300">
+                                        <th class="text-left py-2 text-yellow-700">อันดับ</th>
+                                        <th class="text-left py-2 text-yellow-700">ชื่อ</th>
+                                        <th class="text-center py-2 text-yellow-700">กิจกรรม</th>
+                                        <th class="text-center py-2 text-yellow-700">คะแนน</th>
+                                        <th class="text-center py-2 text-yellow-700">รวม</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="totalRankingTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Exercise Ranking -->
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border-l-4 border-blue-500">
+                        <h3 class="text-xl font-bold text-blue-700 mb-4 flex items-center">
+                            <i class="fas fa-dumbbell mr-2"></i>อันดับกิจกรรมออกกำลังกาย
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-blue-300">
+                                        <th class="text-left py-2 text-blue-700">อันดับ</th>
+                                        <th class="text-left py-2 text-blue-700">ชื่อ</th>
+                                        <th class="text-center py-2 text-blue-700">จำนวน</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exerciseRankingTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Health Credit Ranking -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border-l-4 border-green-500">
+                        <h3 class="text-xl font-bold text-green-700 mb-4 flex items-center">
+                            <i class="fas fa-award mr-2"></i>อันดับคะแนน Siriraj Health Credit
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-green-300">
+                                        <th class="text-left py-2 text-green-700">อันดับ</th>
+                                        <th class="text-left py-2 text-green-700">ชื่อ</th>
+                                        <th class="text-center py-2 text-green-700">จำนวน</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="healthRankingTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYb5G3LIzYb1m1mCuw9suyewmpmECeFjoA4_Pw_2XePMFt1HGS4J94E22N7utKzilD/exec';
+        let allData = [];
+
+        // Tab switching
+        document.getElementById('recordTab').addEventListener('click', () => switchTab('record'));
+        document.getElementById('summaryTab').addEventListener('click', () => switchTab('summary'));
+        document.getElementById('rankingTab').addEventListener('click', () => switchTab('ranking'));
+
+        function switchTab(tab) {
+            const recordTab = document.getElementById('recordTab');
+            const summaryTab = document.getElementById('summaryTab');
+            const rankingTab = document.getElementById('rankingTab');
+            const recordContent = document.getElementById('recordContent');
+            const summaryContent = document.getElementById('summaryContent');
+            const rankingContent = document.getElementById('rankingContent');
+
+            // Reset all tabs to inactive
+            recordTab.className = recordTab.className.replace('tab-active', 'tab-inactive');
+            summaryTab.className = summaryTab.className.replace('tab-active', 'tab-inactive');
+            rankingTab.className = rankingTab.className.replace('tab-active', 'tab-inactive');
+
+            // Hide all content
+            recordContent.classList.add('hidden');
+            summaryContent.classList.add('hidden');
+            rankingContent.classList.add('hidden');
+
+            if (tab === 'record') {
+                recordTab.className = recordTab.className.replace('tab-inactive', 'tab-active');
+                recordContent.classList.remove('hidden');
+            } else if (tab === 'summary') {
+                summaryTab.className = summaryTab.className.replace('tab-inactive', 'tab-active');
+                summaryContent.classList.remove('hidden');
+            } else if (tab === 'ranking') {
+                rankingTab.className = rankingTab.className.replace('tab-inactive', 'tab-active');
+                rankingContent.classList.remove('hidden');
+            }
+        }
+
+        // File preview functionality
+        function setupFilePreview(inputId, previewId, imgId, fileNameId) {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById(imgId).src = e.target.result;
+                        document.getElementById(fileNameId).textContent = file.name;
+                        document.getElementById(previewId).classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        setupFilePreview('exerciseImage', 'exercisePreview', 'exerciseImg', 'exerciseFileName');
+        setupFilePreview('healthImage', 'healthPreview', 'healthImg', 'healthFileName');
+
+        // Convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Set default date to today
+        document.getElementById('dateSelect').valueAsDate = new Date();
+
+        // Form submission
+        document.getElementById('recordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('nameSelect').value;
+            const date = document.getElementById('dateSelect').value;
+            const exerciseFile = document.getElementById('exerciseImage').files[0];
+            const healthFile = document.getElementById('healthImage').files[0];
+
+            if (!name || !date) {
+                alert('กรุณากรอกชื่อและวันที่');
+                return;
+            }
+
+            if (!exerciseFile && !healthFile) {
+                alert('กรุณาเลือกรูปภาพอย่างน้อย 1 รูป');
+                return;
+            }
+
+            // Show loading state
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'saveData');
+                formData.append('name', name);
+                formData.append('date', date);
+
+                if (exerciseFile) {
+                    const exerciseBase64 = await fileToBase64(exerciseFile);
+                    formData.append('exerciseImage', exerciseBase64);
+                    formData.append('exerciseFileName', exerciseFile.name);
+                    formData.append('exerciseMimeType', exerciseFile.type);
+                }
+
+                if (healthFile) {
+                    const healthBase64 = await fileToBase64(healthFile);
+                    formData.append('healthImage', healthBase64);
+                    formData.append('healthFileName', healthFile.name);
+                    formData.append('healthMimeType', healthFile.type);
+                }
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success state
+                    document.getElementById('loadingState').classList.add('hidden');
+                    document.getElementById('successState').classList.remove('hidden');
+                    
+                    // Reset form after 2 seconds
+                    setTimeout(() => {
+                        document.getElementById('recordForm').reset();
+                        document.getElementById('exercisePreview').classList.add('hidden');
+                        document.getElementById('healthPreview').classList.add('hidden');
+                        document.getElementById('successState').classList.add('hidden');
+                        document.getElementById('submitBtn').classList.remove('hidden');
+                        document.getElementById('dateSelect').valueAsDate = new Date();
+                    }, 2000);
+                } else {
+                    throw new Error(result.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('submitBtn').classList.remove('hidden');
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchBtn').addEventListener('click', async function() {
+            const name = document.getElementById('summaryName').value;
+            const fromMonth = document.getElementById('fromMonth').value;
+            const toMonth = document.getElementById('toMonth').value;
+
+            // Show loading
+            document.getElementById('summaryLoading').classList.remove('hidden');
+            document.getElementById('summaryCards').classList.add('hidden');
+            document.getElementById('dataTable').classList.add('hidden');
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'getData');
+                if (name) formData.append('name', name);
+                if (fromMonth) formData.append('fromMonth', fromMonth);
+                if (toMonth) formData.append('toMonth', toMonth);
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    allData = result.data;
+                    displaySummary(allData);
+                } else {
+                    throw new Error(result.error || 'เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+            } finally {
+                document.getElementById('summaryLoading').classList.add('hidden');
+            }
+        });
+
+        function displaySummary(data) {
+            let exerciseCount = 0;
+            let healthCount = 0;
+
+            data.forEach(row => {
+                if (row.exerciseImageUrl) exerciseCount++;
+                if (row.healthImageUrl) healthCount++;
+            });
+
+            document.getElementById('exerciseCount').textContent = exerciseCount;
+            document.getElementById('healthCount').textContent = healthCount;
+            document.getElementById('totalCount').textContent = exerciseCount + healthCount;
+
+            // Show summary cards
+            document.getElementById('summaryCards').classList.remove('hidden');
+
+            // Display table
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-orange-50 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-3 font-medium">${row.name}</td>
+                    <td class="p-3">${new Date(row.date).toLocaleDateString('th-TH')}</td>
+                    <td class="p-3 text-center">
+                        ${row.exerciseImageUrl ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}
+                    </td>
+                    <td class="p-3 text-center">
+                        ${row.healthImageUrl ? '<i class="fas fa-check text-green-500"></i>' : '<i class="fas fa-times text-red-500"></i>'}
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            document.getElementById('dataTable').classList.remove('hidden');
+        }
+
+        // Set default month range
+        const now = new Date();
+        const currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        document.getElementById('fromMonth').value = currentMonth;
+        document.getElementById('toMonth').value = currentMonth;
+
+        // Ranking functionality
+        document.getElementById('showRankingBtn').addEventListener('click', async function() {
+            // Show loading
+            document.getElementById('rankingLoading').classList.remove('hidden');
+            document.getElementById('rankingResults').classList.add('hidden');
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'getData');
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    calculateAndDisplayRanking(result.data);
+                } else {
+                    throw new Error(result.error || 'เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+            } finally {
+                document.getElementById('rankingLoading').classList.add('hidden');
+            }
+        });
+
+        function calculateAndDisplayRanking(data) {
+            // All team members in alphabetical order (Thai)
+            const allMembers = [
+                'อัจฉรา', 'อรรถพล', 'อุมาพร', 'เอกธนัช', 'เตือนใจ', 
+                'ฐิติมา', 'นิสา', 'ไพโรจน์', 'มณฑา', 'วารีรัตน์', 
+                'สุพัตรา', 'จิรพงศ์'
+            ];
+
+            // Calculate scores for each member
+            const memberStats = {};
+            
+            // Initialize all members with zero scores
+            allMembers.forEach(name => {
+                memberStats[name] = {
+                    exercise: 0,
+                    health: 0,
+                    total: 0
+                };
+            });
+
+            // Count actual scores from data
+            data.forEach(row => {
+                if (memberStats[row.name]) {
+                    if (row.exerciseImageUrl) memberStats[row.name].exercise++;
+                    if (row.healthImageUrl) memberStats[row.name].health++;
+                    memberStats[row.name].total = memberStats[row.name].exercise + memberStats[row.name].health;
+                }
+            });
+
+            // Create ranking arrays
+            const totalRanking = allMembers.map(name => ({
+                name,
+                exercise: memberStats[name].exercise,
+                health: memberStats[name].health,
+                total: memberStats[name].total
+            })).sort((a, b) => {
+                if (b.total !== a.total) return b.total - a.total;
+                return a.name.localeCompare(b.name, 'th');
+            });
+
+            const exerciseRanking = allMembers.map(name => ({
+                name,
+                count: memberStats[name].exercise
+            })).sort((a, b) => {
+                if (b.count !== a.count) return b.count - a.count;
+                return a.name.localeCompare(b.name, 'th');
+            });
+
+            const healthRanking = allMembers.map(name => ({
+                name,
+                count: memberStats[name].health
+            })).sort((a, b) => {
+                if (b.count !== a.count) return b.count - a.count;
+                return a.name.localeCompare(b.name, 'th');
+            });
+
+            // Display rankings
+            displayTotalRanking(totalRanking);
+            displayExerciseRanking(exerciseRanking);
+            displayHealthRanking(healthRanking);
+
+            document.getElementById('rankingResults').classList.remove('hidden');
+        }
+
+        function displayTotalRanking(ranking) {
+            const tbody = document.getElementById('totalRankingTable');
+            tbody.innerHTML = '';
+
+            ranking.forEach((member, index) => {
+                const rank = index + 1;
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-yellow-50 transition-colors';
+                
+                let rankIcon = '';
+                if (rank === 1) rankIcon = '<i class="fas fa-crown text-yellow-500 mr-1"></i>';
+                else if (rank === 2) rankIcon = '<i class="fas fa-medal text-gray-400 mr-1"></i>';
+                else if (rank === 3) rankIcon = '<i class="fas fa-medal text-orange-400 mr-1"></i>';
+
+                tr.innerHTML = `
+                    <td class="py-2 font-bold text-yellow-700">${rankIcon}${rank}</td>
+                    <td class="py-2 font-medium">${member.name}</td>
+                    <td class="py-2 text-center">${member.exercise}</td>
+                    <td class="py-2 text-center">${member.health}</td>
+                    <td class="py-2 text-center font-bold text-yellow-700">${member.total}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function displayExerciseRanking(ranking) {
+            const tbody = document.getElementById('exerciseRankingTable');
+            tbody.innerHTML = '';
+
+            ranking.forEach((member, index) => {
+                const rank = index + 1;
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-blue-50 transition-colors';
+                
+                let rankIcon = '';
+                if (rank === 1) rankIcon = '<i class="fas fa-crown text-yellow-500 mr-1"></i>';
+                else if (rank === 2) rankIcon = '<i class="fas fa-medal text-gray-400 mr-1"></i>';
+                else if (rank === 3) rankIcon = '<i class="fas fa-medal text-orange-400 mr-1"></i>';
+
+                tr.innerHTML = `
+                    <td class="py-2 font-bold text-blue-700">${rankIcon}${rank}</td>
+                    <td class="py-2 font-medium">${member.name}</td>
+                    <td class="py-2 text-center font-bold text-blue-700">${member.count}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function displayHealthRanking(ranking) {
+            const tbody = document.getElementById('healthRankingTable');
+            tbody.innerHTML = '';
+
+            ranking.forEach((member, index) => {
+                const rank = index + 1;
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-green-50 transition-colors';
+                
+                let rankIcon = '';
+                if (rank === 1) rankIcon = '<i class="fas fa-crown text-yellow-500 mr-1"></i>';
+                else if (rank === 2) rankIcon = '<i class="fas fa-medal text-gray-400 mr-1"></i>';
+                else if (rank === 3) rankIcon = '<i class="fas fa-medal text-orange-400 mr-1"></i>';
+
+                tr.innerHTML = `
+                    <td class="py-2 font-bold text-green-700">${rankIcon}${rank}</td>
+                    <td class="py-2 font-medium">${member.name}</td>
+                    <td class="py-2 text-center font-bold text-green-700">${member.count}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a71994b64f33b6',t:'MTc1NDQwNTM1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
