@@ -313,9 +313,34 @@
                     <p class="text-gray-600">กำลังโหลดข้อมูล...</p>
                 </div>
 
-                <!-- Summary Cards -->
-                <div id="summaryCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Cards will be populated by JavaScript -->
+                <!-- Summary Table -->
+                <div id="summaryTable" class="overflow-x-auto">
+                    <table class="w-full bg-white cute-border shadow-lg">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-pink-500 to-pink-600 text-white">
+                                <th class="px-6 py-4 text-left font-semibold">ชื่อ-สกุล</th>
+                                <th class="px-6 py-4 text-center font-semibold">
+                                    <i class="fas fa-running mr-2"></i>
+                                    ออกกำลังกาย
+                                </th>
+                                <th class="px-6 py-4 text-center font-semibold">
+                                    <i class="fas fa-medal mr-2"></i>
+                                    Health Credit
+                                </th>
+                                <th class="px-6 py-4 text-center font-semibold">
+                                    <i class="fas fa-trophy mr-2"></i>
+                                    รวม
+                                </th>
+                                <th class="px-6 py-4 text-center font-semibold">
+                                    <i class="fas fa-calendar mr-2"></i>
+                                    รายการล่าสุด
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- No Data Message -->
@@ -462,7 +487,7 @@
             const noDataMessage = document.getElementById('noDataMessage');
             
             summaryLoading.classList.remove('hidden');
-            summaryCards.innerHTML = '';
+            document.getElementById('summaryTable').classList.add('hidden');
             noDataMessage.classList.add('hidden');
             
             try {
@@ -474,73 +499,101 @@
                 if (data && data.length > 0) {
                     const filteredData = filterDataByPeriod(data);
                     displaySummaryCards(filteredData);
+                    document.getElementById('summaryTable').classList.remove('hidden');
                 } else {
+                    document.getElementById('summaryTable').classList.add('hidden');
                     noDataMessage.classList.remove('hidden');
                 }
             } catch (error) {
                 console.error('Error loading summary:', error);
                 summaryLoading.classList.add('hidden');
+                document.getElementById('summaryTable').classList.add('hidden');
                 noDataMessage.classList.remove('hidden');
             }
         }
 
         function displaySummaryCards(data) {
-            const summaryCards = document.getElementById('summaryCards');
+            const summaryTableBody = document.getElementById('summaryTableBody');
+            summaryTableBody.innerHTML = '';
             
             // Create summary for each team member
-            TEAM_MEMBERS.forEach(member => {
+            TEAM_MEMBERS.forEach((member, index) => {
                 const memberData = data.filter(row => row[1] === member); // Column B is name
                 const totalRecords = memberData.length;
                 const exerciseCount = memberData.filter(row => row[2] && row[2].trim() !== '').length; // Column C is exercise
                 const creditCount = memberData.filter(row => row[3] && row[3].trim() !== '').length; // Column D is credit
+                const totalCount = exerciseCount + creditCount;
+                const lastRecord = memberData.length > 0 ? new Date(memberData[memberData.length - 1][0]).toLocaleDateString('th-TH') : '-';
                 
-                const card = document.createElement('div');
-                card.className = 'stats-card p-6 shadow-lg';
-                card.innerHTML = `
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-user text-white text-2xl"></i>
+                const row = document.createElement('tr');
+                row.className = index % 2 === 0 ? 'bg-pink-50' : 'bg-white';
+                row.innerHTML = `
+                    <td class="px-6 py-4 border-b border-pink-200">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <span class="font-semibold text-gray-800">${member}</span>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">${member}</h3>
-                        
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600 flex items-center gap-2">
-                                    <i class="fas fa-running text-green-500"></i>
-                                    ออกกำลังกาย
-                                </span>
-                                <span class="font-bold text-xl text-green-600">${exerciseCount}</span>
-                            </div>
-                            
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600 flex items-center gap-2">
-                                    <i class="fas fa-medal text-blue-500"></i>
-                                    Health Credit
-                                </span>
-                                <span class="font-bold text-xl text-blue-600">${creditCount}</span>
-                            </div>
-                            
-                            <div class="flex justify-between items-center pt-2 border-t border-gray-200">
-                                <span class="text-gray-800 font-semibold flex items-center gap-2">
-                                    <i class="fas fa-trophy text-yellow-500"></i>
-                                    รวม
-                                </span>
-                                <span class="font-bold text-2xl text-yellow-600">${exerciseCount + creditCount}</span>
-                            </div>
-                        </div>
-                        
-                        ${totalRecords > 0 ? `
-                            <div class="mt-4 pt-4 border-t border-gray-200">
-                                <div class="text-sm text-gray-500">
-                                    รายการล่าสุด: ${memberData.length > 0 ? new Date(memberData[memberData.length - 1][0]).toLocaleDateString('th-TH') : '-'}
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
+                    </td>
+                    <td class="px-6 py-4 text-center border-b border-pink-200">
+                        <span class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
+                            <span class="font-bold text-xl text-green-600">${exerciseCount}</span>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center border-b border-pink-200">
+                        <span class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                            <span class="font-bold text-xl text-blue-600">${creditCount}</span>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center border-b border-pink-200">
+                        <span class="inline-flex items-center justify-center w-14 h-14 bg-yellow-100 rounded-full border-2 border-yellow-300">
+                            <span class="font-bold text-2xl text-yellow-600">${totalCount}</span>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center border-b border-pink-200">
+                        <span class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                            ${lastRecord}
+                        </span>
+                    </td>
                 `;
                 
-                summaryCards.appendChild(card);
+                summaryTableBody.appendChild(row);
             });
+            
+            // Add summary row at the bottom
+            const totalExercise = TEAM_MEMBERS.reduce((sum, member) => {
+                const memberData = data.filter(row => row[1] === member);
+                return sum + memberData.filter(row => row[2] && row[2].trim() !== '').length;
+            }, 0);
+            
+            const totalCredit = TEAM_MEMBERS.reduce((sum, member) => {
+                const memberData = data.filter(row => row[1] === member);
+                return sum + memberData.filter(row => row[3] && row[3].trim() !== '').length;
+            }, 0);
+            
+            const summaryRow = document.createElement('tr');
+            summaryRow.className = 'bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold';
+            summaryRow.innerHTML = `
+                <td class="px-6 py-4 text-left">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    รวมทั้งหมด
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <span class="text-2xl">${totalExercise}</span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <span class="text-2xl">${totalCredit}</span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <span class="text-3xl font-extrabold">${totalExercise + totalCredit}</span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <i class="fas fa-trophy text-yellow-300 text-xl"></i>
+                </td>
+            `;
+            
+            summaryTableBody.appendChild(summaryRow);
         }
 
         function handleFileSelect(fileNumber) {
@@ -749,5 +802,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96af1d4ec5c399a6',t:'MTc1NDQ4OTM5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96af4573967e10d6',t:'MTc1NDQ5MTAzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
