@@ -34,11 +34,19 @@
         }
         
         .file-preview {
-            max-width: 200px;
-            max-height: 200px;
+            max-width: 100%;
+            width: 250px;
+            height: 200px;
             object-fit: cover;
             border-radius: 15px;
             border: 2px solid #000;
+        }
+        
+        @media (max-width: 640px) {
+            .file-preview {
+                width: 200px;
+                height: 150px;
+            }
         }
         
         .loading-overlay {
@@ -177,18 +185,23 @@
                     <i class="fas fa-running text-pink-500"></i>
                     กิจกรรมออกกำลังกาย
                 </label>
-                <div class="border-2 border-dashed border-pink-300 rounded-xl p-6 text-center bg-pink-50">
-                    <input type="file" id="file1" accept=".jpg,.jpeg,.png" class="hidden" onchange="handleFileSelect(1)">
+                <div class="border-2 border-dashed border-pink-300 rounded-xl p-4 text-center bg-pink-50">
+                    <input type="file" id="file1" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(1)">
                     <div id="uploadArea1" class="cursor-pointer" onclick="document.getElementById('file1').click()">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-pink-400 mb-4"></i>
-                        <p class="text-gray-600">คลิกเพื่อเลือกรูปภาพ</p>
-                        <p class="text-sm text-gray-500 mt-2">รองรับ .jpg, .jpeg, .png (ไม่เกิน 10MB)</p>
+                        <i class="fas fa-camera text-4xl text-pink-400 mb-3"></i>
+                        <p class="text-gray-600 font-medium">ถ่ายรูป หรือ เลือกจากแกลเลอรี่</p>
+                        <p class="text-sm text-gray-500 mt-2">รองรับไฟล์รูปภาพทุกประเภท (ไม่เกิน 10MB)</p>
                     </div>
                     <div id="preview1" class="hidden mt-4">
                         <img id="previewImg1" class="file-preview mx-auto">
-                        <button type="button" onclick="removeFile(1)" class="mt-2 px-4 py-2 bg-red-500 text-white cute-button hover:bg-red-600">
-                            <i class="fas fa-trash"></i> ลบรูป
-                        </button>
+                        <div class="mt-3 flex gap-2 justify-center">
+                            <button type="button" onclick="retakePhoto(1)" class="px-3 py-2 bg-blue-500 text-white cute-button hover:bg-blue-600 text-sm">
+                                <i class="fas fa-camera mr-1"></i> ถ่ายใหม่
+                            </button>
+                            <button type="button" onclick="removeFile(1)" class="px-3 py-2 bg-red-500 text-white cute-button hover:bg-red-600 text-sm">
+                                <i class="fas fa-trash mr-1"></i> ลบรูป
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,18 +212,23 @@
                     <i class="fas fa-medal text-pink-500"></i>
                     Siriraj Health Credit
                 </label>
-                <div class="border-2 border-dashed border-pink-300 rounded-xl p-6 text-center bg-pink-50">
-                    <input type="file" id="file2" accept=".jpg,.jpeg,.png" class="hidden" onchange="handleFileSelect(2)">
+                <div class="border-2 border-dashed border-pink-300 rounded-xl p-4 text-center bg-pink-50">
+                    <input type="file" id="file2" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(2)">
                     <div id="uploadArea2" class="cursor-pointer" onclick="document.getElementById('file2').click()">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-pink-400 mb-4"></i>
-                        <p class="text-gray-600">คลิกเพื่อเลือกรูปภาพ</p>
-                        <p class="text-sm text-gray-500 mt-2">รองรับ .jpg, .jpeg, .png (ไม่เกิน 10MB)</p>
+                        <i class="fas fa-camera text-4xl text-pink-400 mb-3"></i>
+                        <p class="text-gray-600 font-medium">ถ่ายรูป หรือ เลือกจากแกลเลอรี่</p>
+                        <p class="text-sm text-gray-500 mt-2">รองรับไฟล์รูปภาพทุกประเภท (ไม่เกิน 10MB)</p>
                     </div>
                     <div id="preview2" class="hidden mt-4">
                         <img id="previewImg2" class="file-preview mx-auto">
-                        <button type="button" onclick="removeFile(2)" class="mt-2 px-4 py-2 bg-red-500 text-white cute-button hover:bg-red-600">
-                            <i class="fas fa-trash"></i> ลบรูป
-                        </button>
+                        <div class="mt-3 flex gap-2 justify-center">
+                            <button type="button" onclick="retakePhoto(2)" class="px-3 py-2 bg-blue-500 text-white cute-button hover:bg-blue-600 text-sm">
+                                <i class="fas fa-camera mr-1"></i> ถ่ายใหม่
+                            </button>
+                            <button type="button" onclick="removeFile(2)" class="px-3 py-2 bg-red-500 text-white cute-button hover:bg-red-600 text-sm">
+                                <i class="fas fa-trash mr-1"></i> ลบรูป
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -528,10 +546,9 @@
                 return;
             }
             
-            // Check file type
-            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-            if (!allowedTypes.includes(file.type)) {
-                alert('กรุณาเลือกไฟล์ .jpg, .jpeg หรือ .png เท่านั้น');
+            // Check if it's an image file
+            if (!file.type.startsWith('image/')) {
+                alert('กรุณาเลือกไฟล์รูปภาพเท่านั้น');
                 fileInput.value = '';
                 return;
             }
@@ -539,6 +556,13 @@
             // Store file and show preview
             selectedFiles[fileNumber] = file;
             showPreview(file, fileNumber);
+        }
+        
+        function retakePhoto(fileNumber) {
+            // Clear current file
+            removeFile(fileNumber);
+            // Trigger file input
+            document.getElementById(`file${fileNumber}`).click();
         }
 
         function showPreview(file, fileNumber) {
@@ -622,6 +646,12 @@
                 return;
             }
 
+            // Check if at least one file is selected
+            if (Object.keys(selectedFiles).length === 0) {
+                alert('กรุณาเลือกรูปภาพอย่างน้อย 1 รูป');
+                return;
+            }
+
             showLoading();
             
             try {
@@ -631,14 +661,21 @@
                     files: {}
                 };
 
-                // Convert files to base64
+                // Convert files to base64 with error handling
                 for (const [fileNumber, file] of Object.entries(selectedFiles)) {
-                    const base64Data = await fileToBase64(file);
-                    formData.files[`file${fileNumber}`] = {
-                        name: file.name,
-                        type: file.type,
-                        data: base64Data
-                    };
+                    try {
+                        const base64Data = await fileToBase64(file);
+                        formData.files[`file${fileNumber}`] = {
+                            name: file.name,
+                            type: file.type,
+                            data: base64Data
+                        };
+                    } catch (fileError) {
+                        console.error(`Error processing file ${fileNumber}:`, fileError);
+                        hideLoading();
+                        alert(`เกิดข้อผิดพลาดในการประมวลผลรูปภาพ กรุณาลองใหม่`);
+                        return;
+                    }
                 }
 
                 // Complete progress bar
@@ -668,15 +705,26 @@
                     document.getElementById('preview2').classList.add('hidden');
                     document.getElementById('dateInput').valueAsDate = new Date();
                 } else {
-                    throw new Error('Upload failed');
+                    console.error('Server response:', result);
+                    throw new Error('Upload failed: ' + result);
                 }
                 
             } catch (error) {
                 console.error('Error:', error);
                 hideLoading();
+                
+                // More specific error messages
+                if (error.message.includes('Failed to fetch')) {
+                    alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
+                } else if (error.message.includes('NetworkError')) {
+                    alert('เกิดข้อผิดพลาดเครือข่าย กรุณาลองใหม่อีกครั้ง');
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + error.message);
+                }
+                
                 showMessage('error');
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96abb3a762dd8949',t:'MTc1NDQ1MzYwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96ad0d2fb7ed894c',t:'MTc1NDQ2Nzc2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
