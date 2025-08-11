@@ -217,6 +217,7 @@
                     <i class="fas fa-medal text-pink-500"></i>
                     Siriraj Health Credit <span class="text-sm text-gray-500 font-normal">(ไม่บังคับ)</span>
                 </label>
+                
                 <div class="border-2 border-dashed border-pink-300 rounded-xl p-4 text-center bg-pink-50">
                     <input type="file" id="file2" accept="image/*,video/*,.pdf,.doc,.docx" class="hidden" onchange="handleFileSelect(2)">
                     <div id="uploadArea2" class="cursor-pointer" onclick="document.getElementById('file2').click()">
@@ -240,6 +241,15 @@
                             </button>
                         </div>
                     </div>
+                </div>
+                
+                <!-- Credit Score Input -->
+                <div class="space-y-2">
+                    <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                        <i class="fas fa-star text-yellow-500"></i>
+                        จำนวนคะแนน Credit
+                    </label>
+                    <input type="number" id="creditScore" min="0" max="100" step="1" placeholder="กรอกจำนวนคะแนน" class="w-full p-3 cute-border bg-white text-gray-800 focus:outline-none focus:ring-4 focus:ring-pink-200">
                 </div>
             </div>
 
@@ -315,26 +325,14 @@
 
                 <!-- Summary Table -->
                 <div id="summaryTable" class="overflow-x-auto">
-                    <table class="w-full bg-white cute-border shadow-lg">
+                    <table class="w-full bg-white border border-gray-300 rounded-lg">
                         <thead>
-                            <tr class="bg-gradient-to-r from-pink-500 to-pink-600 text-white">
-                                <th class="px-6 py-4 text-left font-semibold">ชื่อ-สกุล</th>
-                                <th class="px-6 py-4 text-center font-semibold">
-                                    <i class="fas fa-running mr-2"></i>
-                                    ออกกำลังกาย
-                                </th>
-                                <th class="px-6 py-4 text-center font-semibold">
-                                    <i class="fas fa-medal mr-2"></i>
-                                    Health Credit
-                                </th>
-                                <th class="px-6 py-4 text-center font-semibold">
-                                    <i class="fas fa-trophy mr-2"></i>
-                                    รวม
-                                </th>
-                                <th class="px-6 py-4 text-center font-semibold">
-                                    <i class="fas fa-calendar mr-2"></i>
-                                    รายการล่าสุด
-                                </th>
+                            <tr class="bg-gray-50 border-b border-gray-300">
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">ชื่อ-สกุล</th>
+                                <th class="px-4 py-3 text-center font-medium text-gray-700">ออกกำลังกาย</th>
+                                <th class="px-4 py-3 text-center font-medium text-gray-700">Health Credit</th>
+                                <th class="px-4 py-3 text-center font-medium text-gray-700">รวม</th>
+                                <th class="px-4 py-3 text-center font-medium text-gray-700">รายการล่าสุด</th>
                             </tr>
                         </thead>
                         <tbody id="summaryTableBody">
@@ -526,35 +524,22 @@
                 const lastRecord = memberData.length > 0 ? new Date(memberData[memberData.length - 1][0]).toLocaleDateString('th-TH') : '-';
                 
                 const row = document.createElement('tr');
-                row.className = index % 2 === 0 ? 'bg-pink-50' : 'bg-white';
+                row.className = index % 2 === 0 ? 'bg-gray-50' : 'bg-white';
                 row.innerHTML = `
-                    <td class="px-6 py-4 border-b border-pink-200">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-white text-sm"></i>
-                            </div>
-                            <span class="font-semibold text-gray-800">${member}</span>
-                        </div>
+                    <td class="px-4 py-3 border-b border-gray-200">
+                        <span class="font-medium text-gray-800">${member}</span>
                     </td>
-                    <td class="px-6 py-4 text-center border-b border-pink-200">
-                        <span class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
-                            <span class="font-bold text-xl text-green-600">${exerciseCount}</span>
-                        </span>
+                    <td class="px-4 py-3 text-center border-b border-gray-200">
+                        <span class="font-semibold text-lg text-gray-700">${exerciseCount}</span>
                     </td>
-                    <td class="px-6 py-4 text-center border-b border-pink-200">
-                        <span class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                            <span class="font-bold text-xl text-blue-600">${creditCount}</span>
-                        </span>
+                    <td class="px-4 py-3 text-center border-b border-gray-200">
+                        <span class="font-semibold text-lg text-gray-700">${creditCount * 2}</span>
                     </td>
-                    <td class="px-6 py-4 text-center border-b border-pink-200">
-                        <span class="inline-flex items-center justify-center w-14 h-14 bg-yellow-100 rounded-full border-2 border-yellow-300">
-                            <span class="font-bold text-2xl text-yellow-600">${totalCount}</span>
-                        </span>
+                    <td class="px-4 py-3 text-center border-b border-gray-200">
+                        <span class="font-bold text-xl text-gray-800">${exerciseCount + (creditCount * 2)}</span>
                     </td>
-                    <td class="px-6 py-4 text-center border-b border-pink-200">
-                        <span class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                            ${lastRecord}
-                        </span>
+                    <td class="px-4 py-3 text-center border-b border-gray-200">
+                        <span class="text-sm text-gray-600">${lastRecord}</span>
                     </td>
                 `;
                 
@@ -573,23 +558,22 @@
             }, 0);
             
             const summaryRow = document.createElement('tr');
-            summaryRow.className = 'bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold';
+            summaryRow.className = 'bg-gray-100 border-t-2 border-gray-300 font-bold';
             summaryRow.innerHTML = `
-                <td class="px-6 py-4 text-left">
-                    <i class="fas fa-chart-bar mr-2"></i>
-                    รวมทั้งหมด
+                <td class="px-4 py-3 text-left">
+                    <span class="text-gray-800">รวมทั้งหมด</span>
                 </td>
-                <td class="px-6 py-4 text-center">
-                    <span class="text-2xl">${totalExercise}</span>
+                <td class="px-4 py-3 text-center">
+                    <span class="text-xl text-gray-800">${totalExercise}</span>
                 </td>
-                <td class="px-6 py-4 text-center">
-                    <span class="text-2xl">${totalCredit}</span>
+                <td class="px-4 py-3 text-center">
+                    <span class="text-xl text-gray-800">${totalCredit * 2}</span>
                 </td>
-                <td class="px-6 py-4 text-center">
-                    <span class="text-3xl font-extrabold">${totalExercise + totalCredit}</span>
+                <td class="px-4 py-3 text-center">
+                    <span class="text-2xl font-extrabold text-gray-900">${totalExercise + (totalCredit * 2)}</span>
                 </td>
-                <td class="px-6 py-4 text-center">
-                    <i class="fas fa-trophy text-yellow-300 text-xl"></i>
+                <td class="px-4 py-3 text-center">
+                    <span class="text-gray-600">-</span>
                 </td>
             `;
             
@@ -727,9 +711,12 @@
             showLoading();
             
             try {
+                const creditScore = document.getElementById('creditScore').value;
+                
                 const formData = {
                     name: name,
                     date: date,
+                    creditScore: creditScore || '',
                     files: {}
                 };
 
@@ -779,6 +766,9 @@
                         document.getElementById(`previewImg${i}`).classList.add('hidden');
                     }
                     
+                    // Reset credit score
+                    document.getElementById('creditScore').value = '';
+                    
                     document.getElementById('dateInput').valueAsDate = new Date();
                 } else {
                     console.error('Server response:', result);
@@ -802,5 +792,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96af4573967e10d6',t:'MTc1NDQ5MTAzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96d78bafc71464f5',t:'MTc1NDkxMzM0NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
