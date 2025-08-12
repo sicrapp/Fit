@@ -331,6 +331,7 @@
                                 <th class="px-4 py-3 text-left font-medium text-gray-700">ชื่อ-สกุล</th>
                                 <th class="px-4 py-3 text-center font-medium text-gray-700">ออกกำลังกาย</th>
                                 <th class="px-4 py-3 text-center font-medium text-gray-700">Health Credit</th>
+                                <th class="px-4 py-3 text-center font-medium text-gray-700">คะแนน x2</th>
                                 <th class="px-4 py-3 text-center font-medium text-gray-700">รวม</th>
                                 <th class="px-4 py-3 text-center font-medium text-gray-700">รายการล่าสุด</th>
                             </tr>
@@ -519,8 +520,21 @@
                 const memberData = data.filter(row => row[1] === member); // Column B is name
                 const totalRecords = memberData.length;
                 const exerciseCount = memberData.filter(row => row[2] && row[2].trim() !== '').length; // Column C is exercise
-                const creditCount = memberData.filter(row => row[3] && row[3].trim() !== '').length; // Column D is credit
-                const totalCount = exerciseCount + creditCount;
+                
+                // คำนวณคะแนน Credit จากคอลัมน์ E (คะแนนที่กรอกจริง ไม่ใช่การนับไฟล์)
+                const creditScoreOriginal = memberData.reduce((sum, row) => {
+                    const creditScore = row[4] || ''; // Column E is credit score text
+                    const scoreNumber = creditScore ? parseInt(creditScore) : 0;
+                    return sum + (isNaN(scoreNumber) ? 0 : scoreNumber);
+                }, 0);
+                
+                // คำนวณคะแนนจากคอลัมน์ H (คะแนน Credit x2)
+                const creditScoreTotal = memberData.reduce((sum, row) => {
+                    const creditScore = row[7] || 0; // Column H is credit score x2
+                    return sum + (typeof creditScore === 'number' ? creditScore : 0);
+                }, 0);
+                
+                const totalCount = exerciseCount + creditScoreTotal;
                 const lastRecord = memberData.length > 0 ? new Date(memberData[memberData.length - 1][0]).toLocaleDateString('th-TH') : '-';
                 
                 const row = document.createElement('tr');
@@ -533,10 +547,13 @@
                         <span class="font-semibold text-lg text-gray-700">${exerciseCount}</span>
                     </td>
                     <td class="px-4 py-3 text-center border-b border-gray-200">
-                        <span class="font-semibold text-lg text-gray-700">${creditCount * 2}</span>
+                        <span class="font-semibold text-lg text-green-600">${creditScoreOriginal}</span>
                     </td>
                     <td class="px-4 py-3 text-center border-b border-gray-200">
-                        <span class="font-bold text-xl text-gray-800">${exerciseCount + (creditCount * 2)}</span>
+                        <span class="font-semibold text-lg text-blue-600">${creditScoreTotal}</span>
+                    </td>
+                    <td class="px-4 py-3 text-center border-b border-gray-200">
+                        <span class="font-bold text-xl text-gray-800">${totalCount}</span>
                     </td>
                     <td class="px-4 py-3 text-center border-b border-gray-200">
                         <span class="text-sm text-gray-600">${lastRecord}</span>
@@ -552,9 +569,15 @@
                 return sum + memberData.filter(row => row[2] && row[2].trim() !== '').length;
             }, 0);
             
-            const totalCredit = TEAM_MEMBERS.reduce((sum, member) => {
-                const memberData = data.filter(row => row[1] === member);
-                return sum + memberData.filter(row => row[3] && row[3].trim() !== '').length;
+            const totalCreditOriginal = data.reduce((sum, row) => {
+                const creditScore = row[4] || ''; // Column E is credit score text
+                const scoreNumber = creditScore ? parseInt(creditScore) : 0;
+                return sum + (isNaN(scoreNumber) ? 0 : scoreNumber);
+            }, 0);
+            
+            const totalCreditScore = data.reduce((sum, row) => {
+                const creditScore = row[7] || 0; // Column H is credit score x2
+                return sum + (typeof creditScore === 'number' ? creditScore : 0);
             }, 0);
             
             const summaryRow = document.createElement('tr');
@@ -567,10 +590,13 @@
                     <span class="text-xl text-gray-800">${totalExercise}</span>
                 </td>
                 <td class="px-4 py-3 text-center">
-                    <span class="text-xl text-gray-800">${totalCredit * 2}</span>
+                    <span class="text-xl font-bold text-green-600">${totalCreditOriginal}</span>
                 </td>
                 <td class="px-4 py-3 text-center">
-                    <span class="text-2xl font-extrabold text-gray-900">${totalExercise + (totalCredit * 2)}</span>
+                    <span class="text-xl font-bold text-blue-600">${totalCreditScore}</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                    <span class="text-2xl font-extrabold text-gray-900">${totalExercise + totalCreditScore}</span>
                 </td>
                 <td class="px-4 py-3 text-center">
                     <span class="text-gray-600">-</span>
@@ -796,5 +822,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96de5301008f10ca',t:'MTc1NDk4NDQyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96def76800b6f82a',t:'MTc1NDk5MTE1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
